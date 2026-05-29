@@ -223,7 +223,11 @@ tr:hover td{background:var(--bg3)}
   .fgrid{grid-template-columns:1fr}
   .metrics{grid-template-columns:1fr 1fr}
   .page{padding:16px}
-  .topbar{padding:0 16px}
+  .topbar{padding:0 16px 0 8px}
+  .sidebar.exp .sbfoot{background:var(--bg3);padding:14px}
+  .sidebar.exp .uname{font-size:14px;font-weight:700;color:var(--text)}
+  .sidebar.exp .utype{font-size:12px;color:var(--orange)}
+  .sidebar.exp .btnsair{padding:10px;font-size:13px;font-weight:600}
 }
 .mobtog{display:none;position:fixed;top:12px;left:12px;z-index:150;width:48px;height:48px;background:var(--orange);border:none;border-radius:50%;align-items:center;justify-content:center;font-size:20px;cursor:pointer;box-shadow:0 4px 20px rgba(255,107,0,.4)}
 /* SCROLLBAR */
@@ -249,6 +253,10 @@ tr:hover td{background:var(--bg3)}
 
 <!-- APP -->
 <div id="appScreen">
+ <!-- Botão hamburguer mobile -->
+ <button class="mobtog" id="mobtog" onclick="toggleSB()">☰</button>
+ <!-- Overlay mobile para fechar sidebar ao clicar fora -->
+ <div id="sideOverlay" onclick="fecharSidebarMobile()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:99"></div>
  <div class="layout">
   <!-- SIDEBAR -->
   <div class="sidebar" id="sidebar">
@@ -278,10 +286,12 @@ tr:hover td{background:var(--bg3)}
   <!-- MAIN -->
   <div class="main" id="mainContent">
    <div class="topbar">
-    <div class="tbtitle" id="tbtitle">Dashboard</div>
+    <div style="display:flex;gap:8px;align-items:center">
+     <button class="btn btg btsm" onclick="sincronizarDados()" title="Sincronizar">🔄</button>
+     <div class="tbtitle" id="tbtitle">Dashboard</div>
+    </div>
     <div style="display:flex;gap:8px;align-items:center">
      <button id="btnInstall" onclick="instalarApp()" title="Instalar como App" style="display:none;align-items:center;gap:6px;padding:7px 12px;background:linear-gradient(135deg,var(--orange),var(--orange2));border:none;border-radius:8px;color:#fff;font-size:12px;font-weight:700;cursor:pointer">📲 Instalar App</button>
-     <button class="btn btg btsm" onclick="sincronizarDados()" title="Sincronizar">🔄</button>
     </div>
    </div>
    <div id="mainAlert"></div>
@@ -832,7 +842,21 @@ function setSync(ok){g('syncDot').className='dot'+(ok?'':' off');g('syncTxt').te
 function al(id,msg,cls){const el=g(id);if(!el)return;el.innerHTML='<div class="abox '+cls+'">'+msg+'</div>';setTimeout(()=>el.innerHTML='',4000);}
 function fmt(v){return'R$ '+(parseFloat(v)||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});}
 function fmtD(d){if(!d)return'-';return new Date(d+'T12:00:00').toLocaleDateString('pt-BR');}
-function toggleSB(){g('sidebar').classList.toggle('exp');g('mainContent').classList.toggle('exp');}
+function toggleSB(){
+  const sb=g('sidebar');
+  sb.classList.toggle('exp');
+  g('mainContent').classList.toggle('exp');
+  if(window.innerWidth<=768){
+    const ov=g('sideOverlay');
+    if(ov)ov.style.display=sb.classList.contains('exp')?'block':'none';
+  }
+}
+function fecharSidebarMobile(){
+  g('sidebar').classList.remove('exp');
+  g('mainContent').classList.remove('exp');
+  const ov=g('sideOverlay');
+  if(ov)ov.style.display='none';
+}
 function abrirLink(id){const u=v(id);if(u)window.open(u,'_blank');}
 function fecharM(id){g(id).classList.remove('open');}
 function abrirM(id){g(id).classList.add('open');}
@@ -851,6 +875,8 @@ function navTo(pg,btn){
   if(window.innerWidth<=768){
     g('sidebar').classList.remove('exp');
     g('mainContent').classList.remove('exp');
+    const ov=g('sideOverlay');
+    if(ov)ov.style.display='none';
   }
 }
 
