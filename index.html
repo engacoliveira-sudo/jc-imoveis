@@ -847,6 +847,11 @@ function navTo(pg,btn){
   g('tbtitle').textContent=titles[pg]||pg;
   if(pg==='dre')renderDRE();
   if(pg==='config')carregarCfg();
+  // Fechar sidebar no mobile após navegar
+  if(window.innerWidth<=768){
+    g('sidebar').classList.remove('exp');
+    g('mainContent').classList.remove('exp');
+  }
 }
 
 function preencherFiltros(){
